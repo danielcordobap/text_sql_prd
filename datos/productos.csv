@@ -1,0 +1,43 @@
+producto_id,nombre_producto,categoria_id,proveedor_id,precio_unitario,unidad_medida
+SKU0001,Leche Entera 1L,1,2,3800,litro
+SKU0002,Leche Deslactosada 1L,1,3,4300,litro
+SKU0003,Yogurt Natural 200g,1,1,2200,unidad
+SKU0004,Queso Campesino 500g,1,1,9000,unidad
+SKU0005,Mantequilla 250g,1,2,7800,unidad
+SKU0006,Kumis 200g,1,2,2300,unidad
+SKU0007,Pan Tajado 500g,2,6,5000,unidad
+SKU0008,Pan Baguette,2,6,3900,unidad
+SKU0009,Croissant,2,1,3400,unidad
+SKU0010,Ponque Vainilla,2,6,8600,unidad
+SKU0011,Galletas Integrales,2,1,4300,paquete
+SKU0012,Agua 600ml,3,4,2100,unidad
+SKU0013,Gaseosa Cola 1.5L,3,5,4500,unidad
+SKU0014,Jugo Naranja 1L,3,5,5700,litro
+SKU0015,Jugo Mango 1L,3,1,5000,litro
+SKU0016,Cerveza Lata 330ml,3,4,3700,unidad
+SKU0017,Cafe Molido 500g,3,1,13000,unidad
+SKU0018,Papas Fritas 150g,4,10,4000,paquete
+SKU0019,Mani Salado 100g,4,10,2600,paquete
+SKU0020,Chocolatina,4,5,2300,unidad
+SKU0021,Galletas Dulces,4,10,3800,paquete
+SKU0022,Palomitas 90g,4,10,2600,paquete
+SKU0023,Detergente 1kg,5,5,12900,unidad
+SKU0024,Jabon Barra,5,8,2300,unidad
+SKU0025,Limpiavidrios 500ml,5,5,6900,unidad
+SKU0026,Cloro 1L,5,8,5500,litro
+SKU0027,Suavizante 1L,5,5,8600,litro
+SKU0028,Banano,6,1,2900,kg
+SKU0029,Manzana,6,1,6200,kg
+SKU0030,Tomate,6,9,3500,kg
+SKU0031,Cebolla,6,9,3200,kg
+SKU0032,Papa,6,9,3100,kg
+SKU0033,Zanahoria,6,9,3100,kg
+SKU0034,Aguacate,6,9,3000,unidad
+SKU0035,Pechuga Pollo,7,7,14900,kg
+SKU0036,Carne Molida,7,7,19900,kg
+SKU0037,Costilla Cerdo,7,7,15300,kg
+SKU0038,Salchicha 500g,7,1,8300,paquete
+SKU0039,Shampoo 400ml,8,8,13100,unidad
+SKU0040,Crema Dental 100ml,8,5,5400,unidad
+SKU0041,Papel Higienico x4,8,8,9000,paquete
+SKU0042,Desodorante,8,5,10000,unidad

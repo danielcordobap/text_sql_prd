@@ -1,0 +1,11 @@
+proveedor_id,nombre_proveedor,ciudad,pais,email_contacto
+1,Distribuidora Andina,Medellin,Colombia,correo@andina.example
+2,Alimentos del Valle,Bogota,Colombia,ventas@delvalle.example
+3,Lacteos La Pradera,Bucaramanga,Colombia,contacto@lapradera.example
+4,Bebidas Tropicales SAS,Barranquilla,Colombia,pedidos@tropicales.example
+5,Importados del Norte,Barranquilla,Colombia,info@delnorte.example
+6,Panaderia Central,Cali,Colombia,central@panaderia.example
+7,Carnes Premium,Medellin,Colombia,ventas@carnespremium.example
+8,Aseo Total SAS,Cucuta,Colombia,contacto@aseototal.example
+9,Frutas del Campo,Medellin,Colombia,pedidos@frutasdelcampo.example
+10,Snacks y Dulces SA,Ibague,Colombia,info@snacksydulces.example

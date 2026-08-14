@@ -1,0 +1,100 @@
+[project]
+name = "text-sql-llm-system"
+version = "0.1.0"
+description = "Sistema text-to-SQL con LLM sobre SQL Server (T-SQL)"
+requires-python = ">=3.11"
+dependencies = [
+    # Driver de SQL Server. TODO(verificar en Fase 0): pyodbc requiere el
+    # "ODBC Driver 18 for SQL Server" instalado en el sistema. Alternativa: pymssql.
+    "pyodbc>=5.1",
+    # Parser/validador de SQL, soporta dialecto T-SQL (dialect="tsql").
+    # Base de la capa sql/validator.py (allowlist SELECT-only, single-statement).
+    "sqlglot>=25",
+    # Config tipada por variables de entorno.
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    # Cliente LLM: SDK de OpenAI apuntado a OpenRouter (endpoint compatible OpenAI).
+    "openai>=1.0",
+    # Orquestación del agente: grafo con estado, memoria por thread_id y bucle de autocorrección.
+    "langgraph>=0.2",
+    # Backend web: API HTTP que expone el agente.
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "openpyxl>=3.1.5",
+]
+
+# Dependencias solo de desarrollo — las que ejecutan los gates.
+# Instálalas con: uv sync --group dev   (o: uv add --dev ruff mypy pytest pytest-cov)
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "pytest>=8",
+    "pytest-cov>=5",
+    # Requerido por el TestClient de FastAPI/Starlette (tests de la API).
+    "httpx>=0.27",
+    "types-openpyxl>=3.1.5.20260807",
+]
+
+# ---------------------------------------------------------------------------
+# RUFF — lint + formato. Varios [GATE] del CODE_QUALITY_CONTRACT se vuelven
+# reglas reales de ruff, no solo grep:
+#   E722  -> B4 (except desnudo)         BLE001 -> B4 (except ciego)
+#   C901  -> B3 (funciones gigantes)     T201   -> B8 (print como logging)
+#   S608  -> C1 (SQL por concatenación)  S105-107 -> B2 (secretos hardcodeados)
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle (incluye E722 bare-except)
+    "F",        # pyflakes
+    "I",        # isort (orden de imports)
+    "UP",       # pyupgrade
+    "B",        # flake8-bugbear
+    "BLE",      # flake8-blind-except (BLE001)
+    "S",        # flake8-bandit (S608 SQL injection, S105-107 secretos)
+    "C90",      # mccabe (complejidad, C901)
+    "T20",      # flake8-print (T201 print encontrado)
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10   # B3: funciones con complejidad > 10 fallan
+
+[tool.ruff.lint.per-file-ignores]
+# En tests se permite: assert (S101), prints (T20) y credenciales FALSAS de fixtures
+# (S105/S106/S107). Los secretos REALES viven solo en .env (gitignored) y S106 sigue ACTIVO
+# en src/. El QA (no el Dev) escribe los tests y jamás usa credenciales reales.
+"tests/*" = ["S101", "T20", "S105", "S106", "S107"]
+# En la CLI, print() ES la salida legítima del programa (no logging) → se permite solo ahí.
+"src/cli.py" = ["T201"]
+
+# ---------------------------------------------------------------------------
+# MYPY — tipos. Gate B5. `strict` exige firmas tipadas en todo src/.
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unreachable = true
+files = ["src"]
+
+[[tool.mypy.overrides]]
+# pyodbc y sqlglot no siempre traen stubs completos; no se cuenta como fallo de tipos.
+module = ["pyodbc.*", "sqlglot.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# PYTEST + COBERTURA — gate D3. <UMBRAL> inicial = 70 %. Súbelo conforme
+# madure la suite; es una decisión del proyecto, no un absoluto.
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]   # permite importar el paquete `src` (layout src/) desde los tests
+addopts = "--cov=src --cov-report=term-missing --cov-fail-under=70"
+
+[tool.coverage.run]
+source = ["src"]
+branch = true

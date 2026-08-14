@@ -1,0 +1,9 @@
+categoria_id,nombre_categoria,descripcion
+1,Lacteos,"Leche, quesos, yogures y derivados"
+2,Panaderia,"Pan, ponques y productos horneados"
+3,Bebidas,"Aguas, gaseosas, jugos y cafe"
+4,Snacks,Pasabocas dulces y salados
+5,Limpieza,Productos de aseo del hogar
+6,Frutas y Verduras,Productos frescos agricolas
+7,Carnes,"Carnes de res, cerdo y pollo"
+8,Cuidado Personal,Higiene y cuidado personal

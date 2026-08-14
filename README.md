@@ -8,6 +8,10 @@ a read-only SQL Server database, and returns the result as a table — with opti
 
 > _"What were the total sales per store last month?"_ → validated `SELECT … GROUP BY …` → table + chart.
 
+> ▶️ **Want to run it locally?** Follow the step-by-step guide in **[GETTING_STARTED.md](GETTING_STARTED.md)**
+> ([en español](GETTING_STARTED.es.md)). ANL needs a SQL Server database and an OpenRouter key — the
+> guide covers both.
+
 The system is built as a **multi-agent graph** (LangGraph): a lightweight router classifies the intent,
 a dedicated **deterministic** model generates the SQL, a strict validator guards execution, and a
 separate advisor answers meta questions about charts/downloads — so the SQL brain never gets polluted
@@ -175,6 +179,9 @@ tests/               Test suite (pytest)
 ---
 
 ## Setup
+
+> **The complete, ordered walkthrough — including a local database via Docker, loading the data, and
+> troubleshooting — is in [GETTING_STARTED.md](GETTING_STARTED.md).** The steps below are the reference.
 
 ### 1. Environment variables
 

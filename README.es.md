@@ -10,6 +10,10 @@ español**.
 > _"¿Cuáles fueron las ventas totales por tienda el mes pasado?"_ → `SELECT … GROUP BY …` validado →
 > tabla + gráfico.
 
+> ▶️ **¿Quieres ejecutarlo localmente?** Sigue la guía paso a paso en
+> **[GETTING_STARTED.es.md](GETTING_STARTED.es.md)** ([in English](GETTING_STARTED.md)). ANL necesita una
+> base de datos SQL Server y una clave de OpenRouter — la guía cubre ambas.
+
 El sistema es un **grafo multi-agente** (LangGraph): un router ligero clasifica la intención, un modelo
 **determinista** dedicado genera el SQL, un validador estricto protege la ejecución, y un asesor
 separado responde preguntas meta sobre gráficos/descargas — así el cerebro SQL nunca se contamina con
@@ -179,6 +183,9 @@ tests/               Suite de pruebas (pytest)
 ---
 
 ## Puesta en marcha
+
+> **La guía completa y ordenada — con base de datos local vía Docker, carga de datos y solución de
+> problemas — está en [GETTING_STARTED.es.md](GETTING_STARTED.es.md).** Los pasos de abajo son la referencia.
 
 ### 1. Variables de entorno
 

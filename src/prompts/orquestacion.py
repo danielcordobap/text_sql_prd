@@ -46,7 +46,34 @@ VIZ_ADVISOR_PROMPT = (
 )
 
 
+MSJ_ACLARACION_PROMPT = {
+    "es": "¿Te refieres a uno de estos valores para '{columna}'?",
+    "en": "Did you mean one of these values for '{columna}'?",
+}
+
+MSJ_SIN_COINCIDENCIA_PROMPT = {
+    "es": "No encontré coincidencias para '{val_original}' en '{columna}'.",
+    "en": "No matches found for '{val_original}' in '{columna}'.",
+}
+
+MSJ_VIZ_FALLBACK_PROMPT = {
+    "es": (
+        "Puedes descargar los resultados de la consulta a Excel o CSV al instante "
+        "usando los botones 'Download CSV' y 'Download Excel' justo debajo de la tabla, "
+        "o activar la vista interactiva usando 'Show Chart'."
+    ),
+    "en": (
+        "You can download the query results to Excel or CSV instantly using the "
+        "'Download CSV' and 'Download Excel' buttons right below the table, or toggle "
+        "the interactive chart view using 'Show Chart'."
+    ),
+}
+
+
 __all__ = [
+    "MSJ_ACLARACION_PROMPT",
+    "MSJ_SIN_COINCIDENCIA_PROMPT",
+    "MSJ_VIZ_FALLBACK_PROMPT",
     "ROUTER_PROMPT",
     "VIZ_ADVISOR_PROMPT",
 ]

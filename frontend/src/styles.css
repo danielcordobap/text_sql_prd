@@ -620,3 +620,78 @@ body {
   color: #ffffff;
   margin-left: auto;
 }
+
+/* ==========================================================================
+   Value Grounding: Aclaración y Nota de Sustitución
+   ========================================================================== */
+
+.aclaracion-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.aclaracion-mensaje {
+  color: #f1f5f9;
+  font-size: 0.925rem;
+  line-height: 1.5;
+}
+
+.candidatos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.candidato-btn {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  padding: 6px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.candidato-btn:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(56, 189, 248, 0.25);
+}
+
+.candidato-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.candidato-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nota-grounding {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(56, 189, 248, 0.08);
+  border-left: 3px solid #38bdf8;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+}
+
+.nota-icon {
+  font-size: 1rem;
+}
+
+.nota-text {
+  font-weight: 500;
+}
+

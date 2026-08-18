@@ -14,12 +14,24 @@ from src.sql.validator import (
 # Esquema mínimo real (descripciones.py). Sin sys/INFORMATION_SCHEMA ni "secretos".
 ESQUEMA = {
     "ventas": {
-        "venta_id", "ticket_id", "fecha", "cliente_id", "tienda_id",
-        "producto_id", "cantidad", "precio_unitario", "descuento", "total_linea",
+        "venta_id",
+        "ticket_id",
+        "fecha",
+        "cliente_id",
+        "tienda_id",
+        "producto_id",
+        "cantidad",
+        "precio_unitario",
+        "descuento",
+        "total_linea",
     },
     "productos": {
-        "producto_id", "nombre_producto", "categoria_id", "proveedor_id",
-        "precio_unitario", "unidad_medida",
+        "producto_id",
+        "nombre_producto",
+        "categoria_id",
+        "proveedor_id",
+        "precio_unitario",
+        "unidad_medida",
     },
     "tiendas": {"tienda_id", "nombre_tienda", "ciudad"},
 }

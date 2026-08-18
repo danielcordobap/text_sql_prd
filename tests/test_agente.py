@@ -15,6 +15,7 @@ def _settings(max_corr: int = 2, window: int = 6) -> SimpleNamespace:
         conversation_window=window,
         router_model_id="",
         model_id="test-model",
+        grounding_habilitado=False,
     )
 
 

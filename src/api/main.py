@@ -12,6 +12,7 @@ from src.api.export import router as export_router
 from src.brain.orquestador import Respuesta
 from src.config.settings import get_settings
 from src.graph.agente import conversar
+from src.grounding.matcher import Candidato
 
 logger = logging.getLogger(__name__)
 
@@ -35,13 +36,15 @@ class ConsultaResponse(BaseModel):
     truncado: bool = False
     codigo_error: str | None = None
     mensaje: str | None = None
-    tipo: Literal["datos", "mensaje"] = "datos"
+    tipo: Literal["datos", "mensaje", "aclaracion"] = "datos"
+    candidatos: list[Candidato] = []
+    nota: str | None = None
 
 
 def _msg_seguro(r: Respuesta) -> str | None:
     """Mapea un mensaje de error seguro orientado al usuario según el código de error."""
     if r.ok:
-        return r.mensaje if r.tipo == "mensaje" else None
+        return r.mensaje if r.tipo in ("mensaje", "aclaracion") else None
 
     # Mapeo de errores de infraestructura a mensajes genéricos seguros
     if r.codigo_error in ("EJECUCION_BD", "EJECUCION_SQL", "ERROR_INTERNO"):
@@ -110,6 +113,8 @@ def consultar(req: ConsultaRequest) -> ConsultaResponse:
         codigo_error=r.codigo_error,
         mensaje=msg,
         tipo=r.tipo,
+        candidatos=r.candidatos,
+        nota=r.nota,
     )
 
 

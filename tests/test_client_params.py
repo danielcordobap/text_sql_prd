@@ -1,4 +1,5 @@
-"""parametrización seed/top_p/provider + reintento-en-vacío en el cliente LLM. Settings FALSOS (SimpleNamespace),
+"""parametrización seed/top_p/provider + reintento-en-vacío en el cliente LLM.
+Settings FALSOS (SimpleNamespace),
 cliente OpenAI mockeado — sin.env real ni secretos. Cubren:
   - No-regresión: sin kwargs nuevos, el request NO lleva seed/top_p/extra_body (router/asesor).
   - Nueva funcionalidad: seed/top_p/provider se inyectan con el formato de OpenRouter.
@@ -67,9 +68,7 @@ def test_seed_top_p_provider_se_inyectan() -> None:
     kwargs = c.client.chat.completions.create.call_args.kwargs
     assert kwargs["seed"] == 42
     assert kwargs["top_p"] == 0.0
-    assert kwargs["extra_body"] == {
-        "provider": {"order": ["Novita"], "allow_fallbacks": False}
-    }
+    assert kwargs["extra_body"] == {"provider": {"order": ["Novita"], "allow_fallbacks": False}}
 
 
 def test_provider_solo_no_agrega_seed() -> None:

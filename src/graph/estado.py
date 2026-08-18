@@ -14,6 +14,8 @@ class EstadoAgente(TypedDict):
     intentos: int
     intencion: str | None
     respuesta: dict[str, Any] | None
+    pendiente_aclaracion: dict[str, Any] | None
+    nota_grounding: str | None
 
 
 __all__ = [

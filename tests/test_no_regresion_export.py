@@ -32,6 +32,8 @@ def test_consulta_response_schema_intacto() -> None:
         "codigo_error",
         "mensaje",
         "tipo",
+        "candidatos",
+        "nota",
     }
 
 

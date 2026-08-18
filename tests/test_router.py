@@ -21,6 +21,7 @@ def _settings_router(router_model_id: str = "router-lite") -> SimpleNamespace:
         model_id="main-model",
         max_correcciones_sql=2,
         conversation_window=6,
+        grounding_habilitado=False,
     )
 
 

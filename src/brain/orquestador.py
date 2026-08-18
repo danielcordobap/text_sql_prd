@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from src.brain.generador import generar_sql
 from src.db.connection import ConexionBDError
+from src.grounding.matcher import Candidato
 from src.schema.loader import esquema_columnas, esquema_para_prompt
 from src.sql.executor import ejecutar_consulta
 
@@ -20,7 +21,9 @@ class Respuesta(BaseModel):
     n_filas: int = 0
     codigo_error: str | None = None
     mensaje: str | None = None
-    tipo: Literal["datos", "mensaje"] = "datos"
+    tipo: Literal["datos", "mensaje", "aclaracion"] = "datos"
+    candidatos: list[Candidato] = []
+    nota: str | None = None
 
 
 def responder(pregunta: str) -> Respuesta:

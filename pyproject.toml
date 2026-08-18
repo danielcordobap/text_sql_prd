@@ -21,6 +21,7 @@ dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
     "openpyxl>=3.1.5",
+    "rapidfuzz>=3.14,<4",
 ]
 
 # Dependencias solo de desarrollo — las que ejecutan los gates.
@@ -67,7 +68,7 @@ max-complexity = 10   # B3: funciones con complejidad > 10 fallan
 [tool.ruff.lint.per-file-ignores]
 # En tests se permite: assert (S101), prints (T20) y credenciales FALSAS de fixtures
 # (S105/S106/S107). Los secretos REALES viven solo en .env (gitignored) y S106 sigue ACTIVO
-# en src/. El QA (no el Dev) escribe los tests y jamás usa credenciales reales.
+# en src/. Los tests jamás usan credenciales reales.
 "tests/*" = ["S101", "T20", "S105", "S106", "S107"]
 # En la CLI, print() ES la salida legítima del programa (no logging) → se permite solo ahí.
 "src/cli.py" = ["T201"]

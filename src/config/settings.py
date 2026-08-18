@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     model_id: Annotated[str, Field(min_length=1)]
     router_model_id: str = ""
-    sql_gen_model_id: str = ""  # ADR-007: modelo dedicado a generación de SQL; vacío = usa model_id
+    sql_gen_model_id: str = ""  # modelo dedicado a generación de SQL; vacío = usa model_id
     sql_gen_seed: int | None = None  # seed fijo para reproducibilidad de la generación
     sql_gen_provider: str = ""  # proveedor OpenRouter a pinnear en generación; vacío = sin pineo
     sql_gen_top_p: float = 0.0  # top_p para la generación determinista (A6: parámetro en config)
@@ -39,6 +39,16 @@ class Settings(BaseSettings):
     sql_max_rows: int = 100
     export_max_rows: int = 50000
     cors_origins: str = "http://localhost:5173"
+
+    # --- Grounding (Value Grounding con aclaración) ---
+    grounding_habilitado: bool = True
+    grounding_umbral: float = 0.82
+    grounding_piso: float = 0.50
+    grounding_margen: float = 0.05
+    grounding_k: int = 4
+    grounding_aclaracion_umbral: float = 0.45
+    grounding_aclaracion_piso: float = 0.30
+    grounding_umbral_por_columna: dict[str, float] = Field(default_factory=dict)
 
     model_config = SettingsConfigDict(
         env_file=".env",

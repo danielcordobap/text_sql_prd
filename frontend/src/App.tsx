@@ -106,7 +106,11 @@ export function App() {
             </p>
           </div>
         ) : (
-          <MessageList mensajes={mensajes} cargando={cargando} />
+          <MessageList
+            mensajes={mensajes}
+            cargando={cargando}
+            onEnviar={manejarEnviar}
+          />
         )}
       </main>
 

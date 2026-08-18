@@ -11,10 +11,16 @@ def formatear_respuesta(r: Respuesta) -> str:
     if not r.ok:
         return f"No se pudo responder [{r.codigo_error}]: {r.mensaje}"
 
+    if r.tipo == "aclaracion":
+        opciones = "\n".join(f"  {i + 1}. {c.valor}" for i, c in enumerate(r.candidatos))
+        return f"{r.mensaje or ''}\n{opciones}"
     if r.tipo == "mensaje":
         return r.mensaje or ""
 
-    lineas = [f"SQL:\n{r.sql}", f"\nResultado ({r.n_filas} filas):"]
+    lineas = []
+    if r.nota:
+        lineas.append(r.nota)
+    lineas.extend([f"SQL:\n{r.sql}", f"\nResultado ({r.n_filas} filas):"])
     if r.n_filas == 0:
         lineas.append("Sin resultados.")
         return "\n".join(lineas)

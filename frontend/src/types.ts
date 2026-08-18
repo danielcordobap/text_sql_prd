@@ -5,6 +5,12 @@ export type ConsultaRequest = {
 
 export type Fila = Record<string, unknown>;
 
+export type Candidato = {
+  valor: string;
+  columna: string;
+  score?: number;
+};
+
 export type ConsultaResponse = {
   thread_id: string;
   ok: boolean;
@@ -15,7 +21,9 @@ export type ConsultaResponse = {
   truncado: boolean;
   codigo_error: string | null;
   mensaje: string | null;
-  tipo: "datos" | "mensaje";
+  tipo: "datos" | "mensaje" | "aclaracion";
+  candidatos?: Candidato[];
+  nota?: string | null;
 };
 
 export type Turno = {

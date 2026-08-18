@@ -5,9 +5,10 @@ import { ResultTable } from "./ResultTable";
 interface MessageListProps {
   mensajes: Turno[];
   cargando: boolean;
+  onEnviar: (pregunta: string) => void;
 }
 
-export function MessageList({ mensajes, cargando }: MessageListProps) {
+export function MessageList({ mensajes, cargando, onEnviar }: MessageListProps) {
   return (
     <div className="message-list">
       {mensajes.map((turno, idx) => (
@@ -22,7 +23,30 @@ export function MessageList({ mensajes, cargando }: MessageListProps) {
               <span className="avatar">🤖</span>
               <div className="message-content">
                 {turno.respuesta.ok ? (
-                  turno.respuesta.tipo === "mensaje" ? (
+                  turno.respuesta.tipo === "aclaracion" ? (
+                    <div className="aclaracion-content">
+                      {turno.respuesta.mensaje && (
+                        <p className="aclaracion-mensaje">
+                          {turno.respuesta.mensaje}
+                        </p>
+                      )}
+                      {turno.respuesta.candidatos &&
+                        turno.respuesta.candidatos.length > 0 && (
+                          <div className="candidatos">
+                            {turno.respuesta.candidatos.map((c, i) => (
+                              <button
+                                key={i}
+                                className="candidato-btn"
+                                disabled={cargando}
+                                onClick={() => onEnviar(c.valor)}
+                              >
+                                {c.valor}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                    </div>
+                  ) : turno.respuesta.tipo === "mensaje" ? (
                     <div className="no-sql-content">
                       {turno.respuesta.mensaje?.split("\n").map((linea, i) => (
                         <p key={i} className="no-sql-paragraph">
@@ -32,6 +56,14 @@ export function MessageList({ mensajes, cargando }: MessageListProps) {
                     </div>
                   ) : (
                     <>
+                      {turno.respuesta.nota && (
+                        <div className="nota-grounding">
+                          <span className="nota-icon">💡</span>
+                          <span className="nota-text">
+                            {turno.respuesta.nota}
+                          </span>
+                        </div>
+                      )}
                       <ResultTable
                         columnas={turno.respuesta.columnas}
                         filas={turno.respuesta.filas}

@@ -29,8 +29,12 @@ tareas que no son SQL.
   de filas (`TOP`).
 - **Generación de SQL determinista**: modelo instruct pinneado (`qwen3-coder`) con `seed` fijo — la
   misma pregunta produce el mismo SQL (ver [Por qué un modelo determinista](#por-qué-un-modelo-determinista)).
-- **Orquestación multi-agente** (LangGraph): router → generar → ejecutar → finalizar, con un bucle de
-  autocorrección acotado.
+- **Orquestación multi-agente** (LangGraph): router → generar → groundear → ejecutar → finalizar, con
+  un bucle de autocorrección acotado.
+- **Value grounding**: empareja por similitud los valores de tu pregunta contra los datos **reales** de
+  la BD, para que no tengas que escribir los nombres exactos — autocorrige typos claros (`"Lacteos"` →
+  `"Lácteos"`, con aviso) y pregunta *"¿quisiste decir…?"* cuando un valor es ambiguo, en vez de
+  devolver cero filas en silencio.
 - **Gráficos y exportación**: visualizaciones Recharts en el cliente + export CSV / XLSX en el servidor.
 - **Memoria conversacional** por hilo (preguntas de seguimiento).
 - Backend **FastAPI** + frontend **React (Vite + TS)**, más una **CLI**.
@@ -44,12 +48,19 @@ flowchart TD
     Q["Pregunta del usuario (NL)"] --> R{Router<br/>clasificador de intención}
     R -->|datos / explicación| G["Cerebro SQL<br/>NL → T-SQL (determinista)"]
     R -->|gráficos / descargas| V["Asesor Visual"]
-    G --> VAL["Validador SQL<br/>solo SELECT · una sentencia<br/>bloquea sys/metadatos · fuerza TOP"]
+    G --> GR["Value Grounding<br/>empareja valores vs. datos reales de la BD"]
+    GR -->|valor ambiguo| CL["Pregunta al usuario<br/>¿quisiste decir …?"]
+    GR -->|exacto / autocorregido| VAL["Validador SQL<br/>solo SELECT · una sentencia<br/>bloquea sys/metadatos · fuerza TOP"]
     VAL --> EX["Ejecutor<br/>usuario de BD read-only"]
     EX -->|error| G
     EX -->|filas| F["Respuesta<br/>tabla + gráfico / export opcional"]
+    CL --> F
     V --> F
 ```
+
+> El grafo tiene **7 nodos**: 3 agentes LLM (router, generador SQL, asesor visual) y 4 nodos
+> deterministas (value grounding, validador+ejecutor, aclarar, finalizar). Los valores ambiguos se
+> resuelven cuando el usuario responde en el siguiente turno.
 
 **La seguridad es por capas** (detalle en [Modelo de seguridad](#modelo-de-seguridad)): el usuario de
 BD de solo lectura es la defensa real; el validador es una compuerta complementaria por la que pasa
@@ -141,6 +152,7 @@ en [`esquema_sql_server.sql`](esquema_sql_server.sql).
 | API | FastAPI |
 | Validación / esquemas | Pydantic v2 |
 | Parseo / validación de SQL | `sqlglot` (dialecto `tsql`) |
+| Value grounding (matching difuso) | `rapidfuzz` |
 | Base de datos | Azure SQL Server (T-SQL) vía `pyodbc`, usuario read-only |
 | Proveedor de LLM | OpenRouter (cliente agnóstico al proveedor) |
 | Modelo de generación de SQL | `qwen/qwen3-coder-30b-a3b-instruct` (determinista) |
@@ -196,7 +208,7 @@ requeridas y opcionales:
 # --- LLM (OpenRouter) ---
 OPENROUTER_API_KEY=tu_clave_openrouter           # requerida
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
-MODEL_ID=xiaomi/mimo-v2.5                         # requerida (modelo por defecto/asesor)
+MODEL_ID=qwen/qwen3-coder-30b                     # requerida (modelo por defecto/asesor)
 ROUTER_MODEL_ID=meta-llama/llama-3.1-8b-instruct
 # Generación de SQL (determinista) — ver "Por qué un modelo determinista"
 SQL_GEN_MODEL_ID=qwen/qwen3-coder-30b-a3b-instruct
@@ -270,11 +282,15 @@ uv run python -m src.cli
    SQL**, sin bloquear nunca las preguntas de datos.
 2. **Generación de SQL** — el esquema (introspeccionado en vivo) + la pregunta se envían a un modelo
    instruct **determinista**, que devuelve un único `SELECT` de T-SQL.
-3. **Validación** — toda consulta pasa por el validador: solo `SELECT`, una sentencia, sin
+3. **Value grounding** — los valores literales de la consulta se emparejan por similitud (`rapidfuzz`)
+   contra los valores reales de la BD. Los exactos corren tal cual; un typo claro se autocorrige con
+   aviso; un valor ambiguo pregunta al usuario *"¿quisiste decir…?"*; toda consulta reescrita vuelve a
+   pasar por el validador.
+4. **Validación** — toda consulta pasa por el validador: solo `SELECT`, una sentencia, sin
    `sys`/`INFORMATION_SCHEMA`, columnas/tablas verificadas contra el catálogo real, y tope de filas.
-4. **Ejecución** — la consulta validada corre sobre la conexión **read-only** con timeout y límite de
+5. **Ejecución** — la consulta validada corre sobre la conexión **read-only** con timeout y límite de
    filas. Ante error, un bucle de autocorrección **acotado** le devuelve el error al modelo.
-5. **Respuesta** — las filas se devuelven como tabla; el frontend puede renderizar un gráfico o
+6. **Respuesta** — las filas se devuelven como tabla; el frontend puede renderizar un gráfico o
    exportar CSV/XLSX.
 
 ### Por qué un modelo determinista

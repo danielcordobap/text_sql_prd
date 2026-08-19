@@ -26,8 +26,12 @@ by non-SQL tasks.
   `SELECT`**, blocks multi-statement and system-catalog access, and forces a row cap (`TOP`).
 - **Deterministic SQL generation**: a pinned instruct model (`qwen3-coder`) with a fixed `seed` — the
   same question yields the same SQL (see [Why determinism](#why-a-deterministic-model)).
-- **Multi-agent orchestration** (LangGraph): router → generate → execute → finalize, with a bounded
-  self-correction loop.
+- **Multi-agent orchestration** (LangGraph): router → generate → ground → execute → finalize, with a
+  bounded self-correction loop.
+- **Value grounding**: fuzzy-matches the values in your question against the **real** data in the DB,
+  so you don't have to type names exactly — it auto-corrects clear typos (`"Lacteos"` → `"Lácteos"`,
+  with a note) and asks *"did you mean…?"* when a value is ambiguous, instead of silently returning
+  zero rows.
 - **Charts & export**: client-side Recharts visualizations + server-side CSV / XLSX export.
 - **Conversational memory** per thread (follow-up questions).
 - **FastAPI** backend + **React (Vite + TS)** frontend, plus a **CLI**.
@@ -41,12 +45,19 @@ flowchart TD
     Q["User question (NL)"] --> R{Router<br/>intent classifier}
     R -->|data / explanation| G["SQL Brain<br/>NL → T-SQL (deterministic)"]
     R -->|charts / downloads| V["Visual Advisor"]
-    G --> VAL["SQL Validator<br/>SELECT-only · single-statement<br/>block sys/metadata · force TOP"]
+    G --> GR["Value Grounding<br/>fuzzy-match values vs. real DB data"]
+    GR -->|ambiguous value| CL["Ask user<br/>did you mean …?"]
+    GR -->|exact / auto-corrected| VAL["SQL Validator<br/>SELECT-only · single-statement<br/>block sys/metadata · force TOP"]
     VAL --> EX["Executor<br/>read-only DB user"]
     EX -->|error| G
     EX -->|rows| F["Response<br/>table + optional chart / export"]
+    CL --> F
     V --> F
 ```
+
+> The graph has **7 nodes**: 3 LLM agents (router, SQL generator, visual advisor) and 4 deterministic
+> nodes (value grounding, validator+executor, clarify, finalize). Ambiguous values are resolved when
+> the user answers on the next turn.
 
 **Security is layered** (details in [Security model](#security-model)): the read-only DB user is the
 real defense; the validator is a complementary gate that every query passes **before** execution.
@@ -137,6 +148,7 @@ Full column-level documentation is in [`datos/MODELO_DATOS.md`](datos/MODELO_DAT
 | API | FastAPI |
 | Validation / schemas | Pydantic v2 |
 | SQL parsing / validation | `sqlglot` (dialect `tsql`) |
+| Value grounding (fuzzy matching) | `rapidfuzz` |
 | Database | Azure SQL Server (T-SQL) via `pyodbc`, read-only user |
 | LLM provider | OpenRouter (provider-agnostic client) |
 | SQL generation model | `qwen/qwen3-coder-30b-a3b-instruct` (deterministic) |
@@ -192,7 +204,7 @@ optional variables:
 # --- LLM (OpenRouter) ---
 OPENROUTER_API_KEY=your_openrouter_key          # required
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
-MODEL_ID=xiaomi/mimo-v2.5                        # required (default/advisor model)
+MODEL_ID=qwen/qwen3-coder-30b                    # required (default/advisor model)
 ROUTER_MODEL_ID=meta-llama/llama-3.1-8b-instruct
 # SQL generation (deterministic) — see "Why a deterministic model"
 SQL_GEN_MODEL_ID=qwen/qwen3-coder-30b-a3b-instruct
@@ -266,11 +278,14 @@ uv run python -m src.cli
    **degrades to SQL**, never blocking data questions.
 2. **SQL generation** — the schema (introspected live) + the question are sent to a **deterministic**
    instruct model, which returns a single T-SQL `SELECT`.
-3. **Validation** — every query passes the validator: `SELECT`-only, single statement, no
+3. **Value grounding** — the literal values in the query are fuzzy-matched (`rapidfuzz`) against the
+   real values in the DB. Exact matches run as-is; a clear typo is auto-corrected with a note; an
+   ambiguous value asks the user *"did you mean…?"*; every rewritten query re-enters the validator.
+4. **Validation** — every query passes the validator: `SELECT`-only, single statement, no
    `sys`/`INFORMATION_SCHEMA`, columns/tables checked against the real catalog, and a forced row cap.
-4. **Execution** — the validated query runs on the **read-only** connection with a timeout and row
+5. **Execution** — the validated query runs on the **read-only** connection with a timeout and row
    limit. On error, a **bounded** self-correction loop feeds the error back to the model.
-5. **Response** — rows are returned as a table; the frontend can render a chart or export CSV/XLSX.
+6. **Response** — rows are returned as a table; the frontend can render a chart or export CSV/XLSX.
 
 ### Why a deterministic model
 
